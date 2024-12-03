@@ -10,6 +10,9 @@ import productrouter from "./routes/productsroute..js"
 import { connectoDatabase } from "./config/mysql.js"
 // const path = require("path")
 import {verifiedToken,verifiedUser} from "./controllers/usercontroller.js"
+import Categoryroute from "./routes/cateoryroute.js"
+import hotdealsroutes from "./routes/hotdealsroutes.js"
+import flashdealsroutes from "./routes/flashdealsroutes.js"
 const db = await connectoDatabase()
 // app config
 const app = express();
@@ -29,7 +32,11 @@ app.get('/verified', verifiedToken, verifiedUser);
 
 // api endpoints
 app.use("/api/user",Userrouter)
+app.use("/api/categories",Categoryroute)
 app.use("/api/product",productrouter)
+app.use("/api/hotdeals",hotdealsroutes)
+app.use("/api/flashdeals",flashdealsroutes)
+
 
 
 const storage = multer.diskStorage({
@@ -50,30 +57,7 @@ const storage = multer.diskStorage({
 
 
 
-    
 
-
-// app.get("/getproducts", (req,res) => {
-//     // res.send(" from the cloud server")
-//     const sql ="SELECT * FROM detail"
-
-//     db.query(sql, (err, data) =>{
-//         if (err) return res.json("error")
-//             return res.json(data)
-//     })
-// })
-
-
-
-// app.get("/adminproducts" , (req,res) =>{
-//     const sql = "SELECT * FROM products"
-//     db.query(sql, (err,data) => {
-//         if (err) return res.json("Error")
-//             return res.json(data)
-        
-
-//     })
-// })
 
 const get = app.get("/uploaddata" , async (req,res) =>{
     const sql = "SELECT * FROM products"
@@ -85,23 +69,6 @@ const get = app.get("/uploaddata" , async (req,res) =>{
 })
 
 
-// app.post("/uploaddata",(req,res) =>{
-
-//     const sql = "INSERT INTO productdetail (`productCategory`,`productDescription`,`productRate`,`productDelivery`,`productPrice`) VALUES(?)";
-//     const values=[
-//                 req.body.productCategory,
-//                 req.body.productDescription,
-//                 req.body.productRate,
-//                 req.body.productDelivery,
-//                 req.body.productPrice,
-            
-//                ]
-
-    // db.query(sql,[values],(err, result) =>{
-    //     if(err) return console.log(err)
-    //         return res.json({Status:"success"})
-
-    // })
     // dont delete this code 
 
     app.post("/addproduct", upload.single("file"), async (req,res) =>{

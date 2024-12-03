@@ -10,8 +10,7 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-const addproduct = async (req,res) =>{
+const addflashdeals = async (req,res) =>{
 
     
     try{
@@ -54,7 +53,7 @@ const addproduct = async (req,res) =>{
 
         const db = await connectoDatabase()
 
-const sql = "INSERT INTO products (`name`, `description`,`price`,`image`,`date`) VALUES (?)";
+const sql = "INSERT INTO flashdeals (`name`, `description`,`price`,`image`,`date`) VALUES (?)";
 
 await db.query(sql, [productData], (err, result) => {
   if (err) {
@@ -72,41 +71,6 @@ res.status(500).json({ success: false, message: error.message });
 console.error(error);
 }
 };
-
-const deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params; // Extract product ID from URL parameters
-
-    // Ensure ID is provided
-    if (!id) {
-      return res.status(400).json({ success: false, message: "Product ID is required" });
-    }
-
-    // Connect to the database
-    const db = await connectoDatabase();
-
-    // Prepare SQL query for deletion
-    const sql = "DELETE FROM products WHERE id = ?";
-
-    await db.query(sql, [id], (err, result) => {
-      if (err) {
-        console.error(err.message);
-        return res.status(500).json({ success: false, message: "Database deletion error" });
-      }
-      
-      // Check if any rows were affected (i.e., product existed)
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: "Product not found" });
-      }
-
-      res.json({ success: true, message: "Product deleted successfully!" });
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-    console.error(error);
-  }
-};
-
 //  list products
 const listproducts = async (req,res) =>{
   try{
@@ -125,9 +89,9 @@ const removingProducts = async (req,res) =>{
 
 
 
-const get = async (req, res) => {
+const getflashdeals = async (req, res) => {
   const productid = req.params.id
-  const sql = "SELECT * FROM products"; // Make sure your table name is correct
+  const sql = "SELECT * FROM flashdeals"; // Make sure your table name is correct
 
   try {
     const db = await connectoDatabase();
@@ -161,4 +125,4 @@ const singleproduct = async (req,res) =>{
 }
 
 
-export {addproduct,listproducts,deleteProduct,singleproduct ,get}
+export {addflashdeals,getflashdeals,removingProducts,singleproduct}

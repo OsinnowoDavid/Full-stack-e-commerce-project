@@ -26,8 +26,8 @@ const registeruser = async (req,res) =>{
         if (row.length > 0){
             return res.status(409).json({message:"user already existed"})
         }
-        const saltRounds = 10;
-        const hashpassword = await bcrypt.hash(Password,saltRounds);
+        const salt = 10;
+        const hashpassword = await bcrypt.hash(Password,salt);
 
         await db.query("INSERT INTO userdetail (Name,Email,Password) VALUES(?,?,?)",[Name,Email,hashpassword])
         res.status(200).json({message:"user created successfully"})
@@ -42,8 +42,8 @@ const loginuser = async (req, res) => {
 
     try {
         const db = await connectoDatabase();
-        const sql = "SELECT * FROM userdetail WHERE Email = ?";
-        const [row] = await db.query(sql, [Email]);
+        const [row] = await db.query("SELECT * FROM userdetail WHERE Email = ?",[Email])
+        // const [row] = await db.query(sql, [Email]);
 
         if (row.length === 0) {
             return res.status(404).json({ message: "User not found" });
@@ -60,7 +60,8 @@ const loginuser = async (req, res) => {
         }
 
         const token = jwt.sign({ id: row[0].id }, process.env.JWT_SECRET, { expiresIn: "3h" });
-        return res.status(200).json({ token: token });
+        
+        return res.status(201).json({ token: token });
 
     } catch (err) {
         console.error('Error during login:', err);

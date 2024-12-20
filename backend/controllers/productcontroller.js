@@ -152,13 +152,73 @@ const get = async (req, res) => {
   
 
 // functions for singleproducts
-const singleproduct = async (req,res) =>{
-  try{
+// const singleproduct = async (req,res) =>{
+//   try{
       
 
-  } catch (err){}
+//   } catch (err){}
 
-}
+// }
+
+const update = async (req, res) => {
+  try {
+    // Validate request body and files
+    console.log(req.files); // Debugging
+    console.log(req.body); // Debugging
 
 
-export {addproduct,listproducts,deleteProduct,singleproduct ,get}
+    const{name,description,price,category,subcategory,sizes,bestseller}= req.body
+
+    const image1 = req.files.image1 && req.files.image1[0]
+
+    
+    // const image2 = req.files.image2 && req.files.image2[0]
+    // const image3 = req.files.image3 && req.files.image3[0]
+    // const image4 = req.files.image4 && req.files.image4[0]
+
+    const images = image1 ? [image1] : [];
+    const imageurl = await Promise.all(
+      images.map(async (item) => {
+        const result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
+        return result.secure_url;
+      })
+    );
+    const productData = [name, description, price, imageurl, new Date()];
+
+    const db = await connectoDatabase();
+
+    const sql = "UPDATE products SET `name`= ?, `description`= ?, `price`= ?, `image`= ?, `date`= ? WHERE id = ?";
+    const id = req.params.id;
+    const query = util.promisify(db.query).bind(db);
+
+    await query(sql, [...productData, id]);
+    res.json({ success: true, message: "Product updated successfully!" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+  }
+};
+
+const singleproduct = async (req, res) => {
+  const sql = "SELECT * FROM products WHERE ID = ?"; // Ensure the table name is correct
+  const { id } = req.params; // Correct destructuring
+
+  try {
+    const db = await connectoDatabase(); // Ensure correct spelling of your function
+    const [result] = await db.query(sql, [id]); // Pass `id` correctly in an array
+    
+    console.log(result); // Log the result to check the data
+    
+    // If no data is returned, send an appropriate response
+    if (!result || result.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    return res.json({ message: "success", product: result });
+  } catch (error) {
+    console.error("Database error:", error); // Better error logging
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+export {addproduct,listproducts,deleteProduct,singleproduct ,get, update}

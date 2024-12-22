@@ -28,7 +28,7 @@ const addHotDeal = async (req,res) =>{
       const images = [image1] .filter((item) => item !== undefined)
        let imageurl = await Promise.all(
           images.map(async (item) =>{
-              let result = await cloudinary.uploader.upload(item.path ,{resource_type:"image"})
+              let result = await cloudinary.uploader.upload(item.path ,{resource_type:"image", background_removal: "cloudinary_ai"})
 
               return result.secure_url
               

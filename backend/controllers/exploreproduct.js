@@ -45,7 +45,7 @@ const getexplore = async (req, res) => {
       const images = image1 ? [image1] : [];
       const imageurl = await Promise.all(
         images.map(async (item) => {
-          const result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
+          const result = await cloudinary.uploader.upload(item.path, { resource_type: "image", background_removal: "cloudinary_ai" });
           return result.secure_url;
         })
       );

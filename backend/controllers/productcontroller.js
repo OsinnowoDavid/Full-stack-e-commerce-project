@@ -16,7 +16,7 @@ const addproduct = async (req,res) =>{
     
     try{
 
-        const{name,description,price,category,subcategory,sizes,bestseller}= req.body
+        const{name,description,price,category, rate, subcategory,sizes,bestseller}= req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         // const image2 = req.files.image2 && req.files.image2[0]
@@ -26,7 +26,7 @@ const addproduct = async (req,res) =>{
         const images = [image1] .filter((item) => item !== undefined)
          let imageurl = await Promise.all(
             images.map(async (item) =>{
-                let result = await cloudinary.uploader.upload(item.path ,{resource_type:"image"})
+                let result = await cloudinary.uploader.upload(item.path ,{resource_type:"image", background_removal: "cloudinary_ai"})
 
                 return result.secure_url
                 
@@ -49,12 +49,12 @@ const addproduct = async (req,res) =>{
     //   JSON.stringify(imageurl), // Store image URLs as JSON string
     //   date: new Date() // Current date
     // ]
-    const productData = [name, description, price, imageurl, new Date()];
+    const productData = [name, description, price, rate, imageurl, new Date()];
     console.log(imageurl)
 
         const db = await connectoDatabase()
 
-const sql = "INSERT INTO products (`name`, `description`,`price`,`image`,`date`) VALUES (?)";
+const sql = "INSERT INTO products (`name`, `description`,`price`,`image`,`date`,`rate`) VALUES (?)";
 
 await db.query(sql, [productData], (err, result) => {
   if (err) {
